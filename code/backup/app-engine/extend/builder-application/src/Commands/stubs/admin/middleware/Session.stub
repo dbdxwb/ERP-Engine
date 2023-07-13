@@ -1,0 +1,21 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Middleware\Admin;
+
+use Illuminate\Http\Request;
+
+class Session
+{
+    public function handle(Request $request, \Closure $next)
+    {
+        $path = '/'.trim(config('source-$LOWER_NAME$-admin.route.prefix'), '/');
+
+        config(['session.path' => $path]);
+
+        if ($domain = config('source-$LOWER_NAME$-admin.route.domain')) {
+            config(['session.domain' => $domain]);
+        }
+
+        return $next($request);
+    }
+}

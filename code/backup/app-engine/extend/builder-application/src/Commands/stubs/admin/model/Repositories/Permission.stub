@@ -1,0 +1,15 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Repositories\Admin;
+
+use Builder\Source\Admin\Repositories\EloquentRepository;
+
+class Permission extends EloquentRepository
+{
+    public function __construct()
+    {
+        $this->eloquentClass = config('source-$LOWER_NAME$-admin.database.permissions_model');
+
+        parent::__construct();
+    }
+}

@@ -1,0 +1,39 @@
+<?php
+
+namespace Source\$STUDLY_NAME$\Database\Seeders;
+
+use Illuminate\Database\Seeder;
+use Modules\Core\Models\AppEngine\AppEngine;
+use Modules\Core\Support\Facades\Website;
+use Ramsey\Uuid\Uuid;
+
+class AppEngineTablesSeeder extends Seeder
+{
+    /**
+     * Run the database seeds.
+     *
+     * @return void
+     */
+    public function run()
+    {
+        $createdAt = date('Y-m-d H:i:s');
+
+        AppEngine::create([
+            'app_engine_key'    => '$LOWER_NAME$',
+            'type'              => 3,
+            'website_id'        => Website::id() ?: 0,
+            'name'              => '$STUDLY_NAME$',
+            'describe'          => '$STUDLY_NAME$',
+            'logo'              => 0,
+            'public_type'       => 2,
+            'user_publish'      => 0,
+            'user_publish_name' => '$STUDLY_NAME$',
+            'editor_publish'    => 0,
+            'is_system'         => 1,
+            'parent_id'         => 0,
+            'status'            => 1,
+            'path'            => '$STUDLY_NAME$',
+            'created_at'        => $createdAt,
+        ]);
+    }
+}

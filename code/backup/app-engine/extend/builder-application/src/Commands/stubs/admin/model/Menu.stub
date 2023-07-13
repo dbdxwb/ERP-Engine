@@ -1,0 +1,176 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Models\Admin;
+
+use Builder\Source\Admin\Traits\HasDateTimeFormatter;
+use Builder\Source\Admin\Traits\ModelTree;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsToMany;
+use Spatie\EloquentSortable\Sortable;
+use Modules\Core\Support\Facades\Website;
+
+/**
+ * Class Menu.
+ *
+ * @property int $id
+ *
+ * @method where($parent_id, $id)
+ */
+class Menu extends Model implements Sortable
+{
+    use HasDateTimeFormatter,
+        MenuCache,
+        ModelTree {
+            allNodes as treeAllNodes;
+            ModelTree::boot as treeBoot;
+        }
+
+    /**
+     * @var array
+     */
+    protected $sortable = [
+        'sort_when_creating' => true,
+    ];
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array
+     */
+    protected $fillable = ['parent_id', 'order', 'title', 'icon', 'uri', 'permission_id'];
+
+    /**
+     * Create a new Eloquent model instance.
+     *
+     * @param array $attributes
+     */
+    public function __construct(array $attributes = [])
+    {
+        $connection = config('source-$LOWER_NAME$-admin.database.connection') ?: config('database.default');
+
+        $this->setConnection($connection);
+
+        $this->setTable(config('source-$LOWER_NAME$-admin.database.menu_table'));
+
+        parent::__construct($attributes);
+    }
+
+    /**
+     * A Menu belongs to many roles.
+     *
+     * @return BelongsToMany
+     */
+    public function roles(): BelongsToMany
+    {
+        $pivotTable = config('source-$LOWER_NAME$-admin.database.role_menu_table');
+
+        $relatedModel = config('source-$LOWER_NAME$-admin.database.roles_model');
+
+        return $this->belongsToMany($relatedModel, $pivotTable, 'menu_id', 'role_id');
+    }
+
+    public function permissions(): BelongsToMany
+    {
+        $pivotTable = config('source-$LOWER_NAME$-admin.database.permission_menu_table');
+
+        $relatedModel = config('source-$LOWER_NAME$-admin.database.permissions_model');
+
+        return $this->belongsToMany($relatedModel, $pivotTable, 'menu_id', 'permission_id');
+    }
+
+    /**
+     * Get all elements.
+     *
+     * @param bool $force
+     *
+     * @return array
+     */
+    public function allNodes(bool $force = false): array
+    {
+        if ($force || $this->queryCallbacks) {
+            return $this->fetchAll();
+        }
+        $query->where('website_id', Website::id());
+        return $this->remember(function () {
+            return $this->fetchAll();
+        });
+    }
+
+    /**
+     * Fetch all elements.
+     *
+     * @return array
+     */
+    public function fetchAll(): array
+    {
+        return $this->withQuery(function ($query) {
+            if (static::withPermission()) {
+                $query = $query->with('permissions');
+            }
+
+            return $query->with('roles');
+        })->treeAllNodes();
+    }
+
+    /**
+     * Determine if enable menu bind permission.
+     *
+     * @return bool
+     */
+    public static function withPermission()
+    {
+        return config('source-$LOWER_NAME$-admin.menu.bind_permission') && config('source-$LOWER_NAME$-admin.permission.enable');
+    }
+
+    /**
+     * Determine if enable menu bind role.
+     *
+     * @return bool
+     */
+    public static function withRole()
+    {
+        return (bool) config('source-$LOWER_NAME$-admin.permission.enable');
+    }
+
+    /**
+     * Detach models from the relationship.
+     *
+     * @return void
+     */
+    protected static function boot()
+    {
+        static::saving(function (Model $branch) {
+                    $branch->website_id = \Modules\Core\Support\Facades\Website::id();
+                    $parentColumn = $branch->getParentColumn();
+
+                    if (
+                        $branch->getKey()
+                        && \Illuminate\Support\Facades\Request::has($parentColumn)
+                        && request()->input($parentColumn) == $branch->getKey()
+                    ) {
+                        throw new \Exception(trans(config('builder-source-admin.translator') . 'admin.parent_select_error'));
+                    }
+                    if (request()->has('_order')) {
+                        $order = request()->input('_order');
+
+                        request()->offsetUnset('_order');
+
+                        Tree::make(new static())->saveOrder($order);
+
+                        return false;
+                    }
+                    return $branch;
+                });
+
+        static::deleting(function ($model) {
+            $model->roles()->detach();
+            $model->permissions()->detach();
+
+            $model->flushCache();
+        });
+
+        static::saved(function ($model) {
+            $model->flushCache();
+        });
+    }
+}

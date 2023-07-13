@@ -1,0 +1,166 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers\Admin;
+
+use Builder\Source\Admin\Form;
+use Builder\Source\Admin\Layout\Column;
+use Builder\Source\Admin\Layout\Content;
+use Builder\Source\Admin\Layout\Row;
+use Builder\Source\Admin\Models\Repositories\Menu;
+use Builder\Source\Admin\Tree;
+use Builder\Source\Admin\Widgets\Box;
+use Builder\Source\Admin\Widgets\Form as WidgetForm;
+
+class MenuController extends AdminController
+{
+    public function title()
+    {
+        return trans(config('builder-source-admin.translator') .'admin.menu');
+    }
+
+    public function index(Content $content)
+    {
+        return $content
+            ->title($this->title())
+            ->description(trans(config('builder-source-admin.translator') .'admin.list'))
+            ->body(function (Row $row) {
+                $row->column(7, $this->treeView()->render());
+
+                $row->column(5, function (Column $column) {
+                    $form = new WidgetForm();
+                    $form->action(admin_url('auth/menu'));
+
+                    $menuModel = config('source-$LOWER_NAME$-admin.database.menu_model');
+                    $permissionModel = config('source-$LOWER_NAME$-admin.database.permissions_model');
+                    $roleModel = config('source-$LOWER_NAME$-admin.database.roles_model');
+
+                    $form->select('parent_id', trans(config('builder-source-admin.translator') .'admin.parent_id'))->options($menuModel::selectOptions());
+                    $form->text('title', trans(config('builder-source-admin.translator') .'admin.title'))->required();
+                    $form->icon('icon', trans(config('builder-source-admin.translator') .'admin.icon'))->help($this->iconHelp());
+                    $form->text('uri', trans(config('builder-source-admin.translator') .'admin.uri'));
+
+                    if ($menuModel::withRole()) {
+                        $form->multipleSelect('roles', trans(config('builder-source-admin.translator') .'admin.roles'))->options($roleModel::all()->pluck('name', 'id'));
+                    }
+                    if ($menuModel::withPermission()) {
+                        $form->tree('permissions', trans(config('builder-source-admin.translator') .'admin.permission'))
+                            ->expand(false)
+                            ->nodes((new $permissionModel())->allNodes());
+                    }
+                    $form->hidden('_token')->default(csrf_token());
+
+                    $form->width(9, 2);
+
+                    $column->append(Box::make(trans(config('builder-source-admin.translator') .'admin.new'), $form));
+                });
+            });
+    }
+
+    /**
+     * @return \Builder\Source\Admin\Tree
+     */
+    protected function treeView()
+    {
+        $menuModel = config('source-$LOWER_NAME$-admin.database.menu_model');
+
+        return new Tree(new $menuModel(), function (Tree $tree) {
+            $tree->disableCreateButton();
+            $tree->disableQuickCreateButton();
+            $tree->disableEditButton();
+
+            $tree->branch(function ($branch) {
+                $payload = "<i class='fa {$branch['icon']}'></i>&nbsp;<strong>{$branch['title']}</strong>";
+
+                if (! isset($branch['children'])) {
+                    if (url()->isValidUrl($branch['uri'])) {
+                        $uri = $branch['uri'];
+                    } else {
+                        $uri = admin_base_path($branch['uri']);
+                    }
+
+                    $payload .= "&nbsp;&nbsp;&nbsp;<a href=\"$uri\" class=\"dd-nodrag\">$uri</a>";
+                }
+
+                return $payload;
+            });
+        });
+    }
+
+    /**
+     * Make a form builder.
+     *
+     * @return Form
+     */
+    public function form()
+    {
+        $menuModel = config('source-$LOWER_NAME$-admin.database.menu_model');
+
+        $relations = $menuModel::withPermission() ? ['permissions', 'roles'] : 'roles';
+
+        return Form::make(new Menu($relations), function (Form $form) use ($menuModel) {
+            $form->tools(function (Form\Tools $tools) {
+                $tools->disableView();
+            });
+
+            $form->display('id', 'ID');
+
+            $form->select('parent_id', trans(config('builder-source-admin.translator') .'admin.parent_id'))->options(function () use ($menuModel) {
+                return $menuModel::selectOptions();
+            })->saving(function ($v) {
+                return (int) $v;
+            });
+            $form->text('title', trans(config('builder-source-admin.translator') .'admin.title'))->required();
+            $form->icon('icon', trans(config('builder-source-admin.translator') .'admin.icon'))->help($this->iconHelp());
+            $form->text('uri', trans(config('builder-source-admin.translator') .'admin.uri'));
+
+            if ($menuModel::withRole()) {
+                $form->multipleSelect('roles', trans(config('builder-source-admin.translator') .'admin.roles'))
+                    ->options(function () {
+                        $roleModel = config('source-$LOWER_NAME$-admin.database.roles_model');
+
+                        return $roleModel::all()->pluck('name', 'id');
+                    })
+                    ->customFormat(function ($v) {
+                        return array_column($v, 'id');
+                    });
+            }
+            if ($menuModel::withPermission()) {
+                $form->tree('permissions', trans(config('builder-source-admin.translator') .'admin.permission'))
+                    ->nodes(function () {
+                        $permissionModel = config('source-$LOWER_NAME$-admin.database.permissions_model');
+
+                        return (new $permissionModel())->allNodes();
+                    })
+                    ->customFormat(function ($v) {
+                        if (! $v) {
+                            return [];
+                        }
+
+                        return array_column($v, 'id');
+                    });
+            }
+
+            $form->display('created_at', trans(config('builder-source-admin.translator') .'admin.created_at'));
+            $form->display('updated_at', trans(config('builder-source-admin.translator') .'admin.updated_at'));
+        })->saved(function (Form $form, $result) {
+            if ($result) {
+                return $form->location('auth/menu', trans(config('builder-source-admin.translator') .'admin.save_succeeded'));
+            }
+
+            return $form->location('auth/menu', [
+                'message' => trans(config('builder-source-admin.translator') .'admin.nothing_updated'),
+                'status'  => false,
+            ]);
+        });
+    }
+
+    /**
+     * Help message for icon field.
+     *
+     * @return string
+     */
+    protected function iconHelp()
+    {
+        return 'For more icons please see <a href="http://fontawesome.io/icons/" target="_blank">http://fontawesome.io/icons/</a>';
+    }
+}

@@ -1,0 +1,55 @@
+{
+    "name": "builder-source/module",
+    "description": "基于laravel-modules二次开发，自动生成项目，包含完整的代码运行目录结果",
+    "keywords": [
+        "modules",
+        "laravel",
+        "nwidart",
+        "module",
+        "rad"
+    ],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "LZQ",
+            "email": "646196128@qq.com"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "ext-json": "*"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^9.5",
+        "mockery/mockery": "^1.4",
+        "orchestra/testbench": "^7.0",
+        "friendsofphp/php-cs-fixer": "^3.6",
+        "laravel/framework": "^9.21",
+        "spatie/phpunit-snapshot-assertions": "^4.2",
+        "phpstan/phpstan": "^1.4",
+        "builder-source/admin": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "Builder\\Source\\Module\\": "src"
+        },
+        "files": [
+            "src/helpers.php"
+        ]
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Builder\\Source\\Module\\LaravelModulesServiceProvider"
+            ],
+            "aliases": {
+                "Module": "Builder\\Source\\Module\\Facades\\Module"
+            }
+        },
+        "branch-alias": {
+            "dev-master": "4.0-dev"
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

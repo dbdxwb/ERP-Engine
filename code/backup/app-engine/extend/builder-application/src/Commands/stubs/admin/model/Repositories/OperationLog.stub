@@ -1,0 +1,11 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Repositories\Admin;
+
+use Builder\Source\Admin\Models\OperationLog as OperationLogModel;
+use Builder\Source\Admin\Repositories\EloquentRepository;
+
+class OperationLog extends EloquentRepository
+{
+    protected $eloquentClass = OperationLogModel::class;
+}

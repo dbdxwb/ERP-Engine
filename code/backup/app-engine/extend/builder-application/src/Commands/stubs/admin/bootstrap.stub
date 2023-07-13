@@ -1,0 +1,66 @@
+<?php
+
+use Builder\Source\Admin\Admin;
+use Builder\Source\Admin\Grid;
+use Builder\Source\Admin\Form;
+use Builder\Source\Admin\Grid\Filter;
+use Builder\Source\Admin\Show;
+
+/**
+ * 自动生成的管理后台一些基础样式等的设置
+ *
+ * Bootstraper for Admin.
+ *
+ * 设置后台的一些组件的初始化
+ *
+ * extend custom field:
+ * Builder\Source\Admin\Form::extend('php', PHPEditor::class);
+ * Builder\Source\Admin\Grid\Column::extend('php', PHPEditor::class);
+ * Builder\Source\Admin\Grid\Filter::extend('php', PHPEditor::class);
+ *
+ * 引入css和js等静态文件:
+ * Admin::css('/packages/prettydocs/css/styles.css');
+ * Admin::js('/packages/prettydocs/js/main.js');
+ *
+ */
+
+Grid::resolving(function (Grid $grid) {
+    // 设置默认配置
+//    $grid->withBorder();//边框模式
+    $grid->toolsWithOutline(false);//设置工具栏按钮样式
+//    $grid->enableDialogCreate();
+    // 设置弹窗宽高，默认值为 '700px', '670px'
+//    $grid->setDialogFormDimensions('70%', '80%');
+    $grid->rowSelector()->background(Admin::color()->dark50());//设置选中行的背景颜色
+    // 显示快捷编辑按钮
+//    $grid->showQuickEditButton();
+    // 默认为每页20条
+    $grid->paginate(20);
+    // 开启字段选择器功能
+//  $grid->showColumnSelector();
+//    $grid->disableViewButton();
+    $grid->fixColumns(0, -1);
+    $grid->withBorder();
+});
+
+Form\Field\Editor::resolving(function (Form\Field\Editor $editor) {
+    // 设置编辑器图片默认上传到指定的目录
+    $editor->imageDirectory('editor/upload-image/' . date('Ymd'));
+});
+
+Form\Field\Image::resolving(function (Form\Field\Image $image) {
+    // 设置编辑器图片默认上传到指定的目录
+    $image->autoUpload()
+        ->uniqueName()
+        ->move('images/' . date('Ymd'))
+        ->accept('jpg,png,gif,jpeg');
+});
+
+Form\Field\MultipleImage::resolving(function (Form\Field\MultipleImage $image) {
+    // 设置编辑器图片默认上传到指定的目录
+    $image->autoUpload()
+        ->uniqueName()
+        ->move('images/' . date('Ymd'))
+        ->accept('jpg,png,gif,jpeg');
+});
+

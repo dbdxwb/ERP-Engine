@@ -1,0 +1,196 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers\Admin;
+
+use Builder\Source\Admin\Auth\Permission;
+use Builder\Source\Admin\Form;
+use Builder\Source\Admin\Grid;
+use Builder\Source\Admin\Models\Administrator as AdministratorModel;
+use Builder\Source\Admin\Models\Repositories\Administrator;
+use Builder\Source\Admin\Show;
+use Builder\Source\Admin\Support\Helper;
+use Builder\Source\Admin\Widgets\Tree;
+use Modules\Core\Support\Facades\Website;
+
+class UserController extends AdminController
+{
+    public function title()
+    {
+        return trans(config('builder-source-admin.translator') .'admin.administrator');
+    }
+
+    protected function grid()
+    {
+        return Grid::make(new Administrator('roles'), function (Grid $grid) {
+           $grid->model()->where('website_id', Website::id());
+            $grid->column('id', 'ID')->sortable();
+            $grid->column('username');
+            $grid->column('name');
+
+            if (config('source-$LOWER_NAME$-admin.permission.enable')) {
+                $grid->column('roles')->pluck('name')->label('primary', 3);
+
+                $permissionModel = config('source-$LOWER_NAME$-admin.database.permissions_model');
+                $roleModel = config('source-$LOWER_NAME$-admin.database.roles_model');
+                $nodes = (new $permissionModel())->allNodes();
+                $grid->column('permissions')
+                    ->if(function () {
+                        return ! empty($this->roles);
+                    })
+                    ->showTreeInDialog(function (Grid\Displayers\DialogTree $tree) use (&$nodes, $roleModel) {
+                        $tree->nodes($nodes);
+
+                        foreach (array_column($this->roles, 'slug') as $slug) {
+                            if ($roleModel::isAdministrator($slug)) {
+                                $tree->checkAll();
+                            }
+                        }
+                    })
+                    ->else()
+                    ->emptyString();
+            }
+
+            $grid->column('created_at');
+            $grid->column('updated_at')->sortable();
+
+            $grid->quickSearch(['id', 'name', 'username']);
+
+            $grid->disableBatchDelete();
+            $grid->showQuickEditButton();
+            $grid->disableFilterButton();
+            $grid->enableDialogCreate();
+
+            $grid->actions(function (Grid\Displayers\Actions $actions) {
+                if ($actions->getKey() == AdministratorModel::DEFAULT_ID) {
+                    $actions->disableDelete();
+                }
+            });
+        });
+    }
+
+    protected function detail($id)
+    {
+        return Show::make($id, new Administrator('roles'), function (Show $show) {
+            $show->field('id');
+            $show->field('username');
+            $show->field('name');
+
+            $show->field('avatar', trans(config('builder-source-admin.translator') .'admin.avatar'))->image();
+
+            if (config('source-$LOWER_NAME$-admin.permission.enable')) {
+                $show->field('roles')->as(function ($roles) {
+                    if (! $roles) {
+                        return;
+                    }
+
+                    return collect($roles)->pluck('name');
+                })->label();
+
+                $show->field('permissions')->unescape()->as(function () {
+                    $roles = (array) $this->roles;
+
+                    $permissionModel = config('source-$LOWER_NAME$-admin.database.permissions_model');
+                    $roleModel = config('source-$LOWER_NAME$-admin.database.roles_model');
+                    $permissionModel = new $permissionModel();
+                    $nodes = $permissionModel->allNodes();
+
+                    $tree = Tree::make($nodes);
+
+                    $isAdministrator = false;
+                    foreach (array_column($roles, 'slug') as $slug) {
+                        if ($roleModel::isAdministrator($slug)) {
+                            $tree->checkAll();
+                            $isAdministrator = true;
+                        }
+                    }
+
+                    if (! $isAdministrator) {
+                        $keyName = $permissionModel->getKeyName();
+                        $tree->check(
+                            $roleModel::getPermissionId(array_column($roles, $keyName))->flatten()
+                        );
+                    }
+
+                    return $tree->render();
+                });
+            }
+
+            $show->field('created_at');
+            $show->field('updated_at');
+        });
+    }
+
+    public function form()
+    {
+        return Form::make(new Administrator('roles'), function (Form $form) {
+            $userTable = config('source-$LOWER_NAME$-admin.database.users_table');
+
+            $connection = config('source-$LOWER_NAME$-admin.database.connection');
+
+            $id = $form->getKey();
+
+            $form->display('id', 'ID');
+
+            $form->text('username', trans(config('builder-source-admin.translator') .'admin.username'))
+                ->required()
+                ->creationRules(['required', "unique:{$connection}.{$userTable}"])
+                ->updateRules(['required', "unique:{$connection}.{$userTable},username,$id"]);
+            $form->text('name', trans(config('builder-source-admin.translator') .'admin.name'))->required();
+            $form->image('avatar', trans(config('builder-source-admin.translator') .'admin.avatar'))->autoUpload();
+
+            if ($id) {
+                $form->password('password', trans(config('builder-source-admin.translator') .'admin.password'))
+                    ->minLength(5)
+                    ->maxLength(20)
+                    ->customFormat(function () {
+                        return '';
+                    });
+            } else {
+                $form->password('password', trans(config('builder-source-admin.translator') .'admin.password'))
+                    ->required()
+                    ->minLength(5)
+                    ->maxLength(20);
+            }
+
+            $form->password('password_confirmation', trans(config('builder-source-admin.translator') .'admin.password_confirmation'))->same('password');
+
+            $form->ignore(['password_confirmation']);
+
+            if (config('source-$LOWER_NAME$-admin.permission.enable')) {
+                $form->multipleSelect('roles', trans(config('builder-source-admin.translator') .'admin.roles'))
+                    ->options(function () {
+                        $roleModel = config('source-$LOWER_NAME$-admin.database.roles_model');
+
+                        return $roleModel::all()->pluck('name', 'id');
+                    })
+                    ->customFormat(function ($v) {
+                        return array_column($v, 'id');
+                    });
+            }
+
+            $form->display('created_at', trans(config('builder-source-admin.translator') .'admin.created_at'));
+            $form->display('updated_at', trans(config('builder-source-admin.translator') .'admin.updated_at'));
+
+            if ($id == AdministratorModel::DEFAULT_ID) {
+                $form->disableDeleteButton();
+            }
+        })->saving(function (Form $form) {
+            if ($form->password && $form->model()->get('password') != $form->password) {
+                $form->password = bcrypt($form->password);
+            }
+
+            if (! $form->password) {
+                $form->deleteInput('password');
+            }
+        });
+    }
+
+    public function destroy($id)
+    {
+        if (in_array(AdministratorModel::DEFAULT_ID, Helper::array($id))) {
+            Permission::error();
+        }
+
+        return parent::destroy($id);
+    }
+}

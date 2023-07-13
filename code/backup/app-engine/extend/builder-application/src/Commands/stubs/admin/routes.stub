@@ -1,0 +1,37 @@
+<?php
+
+use Illuminate\Routing\Router;
+use Illuminate\Support\Facades\Route;
+
+Route::group([
+    'prefix'     => config('source-$LOWER_NAME$-admin.route.prefix'),
+    'namespace'  => config('source-$LOWER_NAME$-admin.route.namespace'),
+    'middleware' => ['web','source.$LOWER_NAME$.admin.app', 'source.$LOWER_NAME$.admin.session'],
+    'as'         => "source.$LOWER_NAME$.admin."
+], function (Router $router) {
+    $router->get('auth/login', 'AuthController@getLogin');
+    $router->post('auth/login', 'AuthController@postLogin');
+    $router->group([
+        'middleware'    => config('source-$LOWER_NAME$-admin.route.middleware'),
+    ], function (Router $router) {
+        $router->get('/', 'HomeController@index');
+        $router->resource('auth/users', 'UserController');
+        $router->resource('auth/menu', 'MenuController', ['except' => ['create', 'show']]);
+        $router->resource('auth/logs', 'LogController', ['only' => ['index', 'destroy']]);
+        $router->resource('auth/roles', 'RoleController');
+        $router->resource('auth/permissions', 'PermissionController');
+
+        $router->get('auth/logout', 'AuthController@getLogout');
+        $router->get('auth/setting', 'AuthController@getSetting');
+        $router->put('auth/setting', 'AuthController@putSetting');
+        $router->get('helpers/icons', 'IconController@index');
+        $router->post('action', 'HandleActionController@handle')->name('action');
+        $router->post('form', 'HandleFormController@handle')->name('source-$LOWER_NAME$-admin.form');
+        $router->post('form/upload', 'HandleFormController@uploadFile')->name('form.upload');
+        $router->post('form/destroy-file', 'HandleFormController@destroyFile')->name('form.destroy-file');
+        $router->post('value', 'ValueController@handle')->name('value');
+        $router->get('render', 'RenderableController@handle')->name('render');
+        $router->post('tinymce/upload', 'TinymceController@upload')->name('tinymce.upload');
+        $router->post('editor-md/upload', 'EditorMDController@upload')->name('editor-md.upload');
+    });
+});

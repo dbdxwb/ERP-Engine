@@ -1,0 +1,15 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Repositories\Admin;
+
+use Builder\Source\Admin\Repositories\EloquentRepository;
+
+class Menu extends EloquentRepository
+{
+    public function __construct($modelOrRelations = [])
+    {
+        $this->eloquentClass = config('source-$LOWER_NAME$-admin.database.menu_model');
+
+        parent::__construct($modelOrRelations);
+    }
+}

@@ -1,0 +1,187 @@
+<?php
+
+namespace $NAMESPACE$;
+
+use Illuminate\Support\Arr;
+use Illuminate\Support\ServiceProvider;
+use Illuminate\Database\Eloquent\Factory;
+use $MODULE_NAMESPACE$\$LOWER_NAME$\Http\Middleware;
+use Illuminate\Contracts\Container\BindingResolutionException;
+
+class $CLASS$ extends ServiceProvider
+{
+
+    /**
+     * @var array
+     */
+    protected $routeMiddleware = [
+        'source.$LOWER_NAME$.admin.auth'       => Middleware\Admin\Authenticate::class,
+        'source.$LOWER_NAME$.admin.pjax'       => Middleware\Admin\Pjax::class,
+        'source.$LOWER_NAME$.admin.log'        => Middleware\Admin\LogOperation::class,
+        'source.$LOWER_NAME$.admin.permission' => Middleware\Admin\Permission::class,
+        'source.$LOWER_NAME$.admin.bootstrap'  => Middleware\Admin\Bootstrap::class,
+        'source.$LOWER_NAME$.admin.session'    => Middleware\Admin\Session::class,
+        'source.$LOWER_NAME$.admin.upload'     => Middleware\Admin\WebUploader::class,
+        'source.$LOWER_NAME$.admin.app'        => Middleware\Admin\Application::class,
+    ];
+
+    /**
+     * @var array
+     */
+    protected $middlewareGroups = [
+        'source.$LOWER_NAME$.admin' => [
+            'source.$LOWER_NAME$.admin.auth',
+            'source.$LOWER_NAME$.admin.pjax',
+            'source.$LOWER_NAME$.admin.log',
+            'source.$LOWER_NAME$.admin.bootstrap',
+            'source.$LOWER_NAME$.admin.permission',
+//            'source.$LOWER_NAME$.admin.session',
+            'source.$LOWER_NAME$.admin.upload',
+        ],
+    ];
+
+    /**
+     * Indicates if loading of the provider is deferred.
+     *
+     * @var bool
+     */
+    protected $defer = false;
+
+    /**
+     * Boot the application events.
+     *
+     * @return void
+     */
+    public function boot()
+    {
+        $this->registerTranslations();
+        $this->registerConfig();
+        $this->registerViews();
+        $this->loadMigrationsFrom(__DIR__ . '/../$MIGRATIONS_PATH$');
+    }
+
+    /**
+     * Register the service provider.
+     *
+     * @return void
+     */
+    public function register()
+    {
+        $this->registerAdminConfig();
+        $this->loadAdminAuthConfig();
+        $this->registerRouteMiddleware();
+        $this->app->register(RouteServiceProvider::class);
+    }
+
+    /**
+     * Register config.
+     *
+     * @return void
+     */
+    protected function registerConfig()
+    {
+        $this->publishes([
+            __DIR__.'/../$PATH_CONFIG$/config.php' => config_path('source-$LOWER_NAME$.php'),
+        ], 'config');
+        $this->mergeConfigFrom(
+            __DIR__.'/../$PATH_CONFIG$/config.php', 'source-$LOWER_NAME$'
+        );
+    }
+
+    /**
+     * Register config.
+     *
+     * @return void
+     */
+    protected function registerAdminConfig()
+    {
+        $this->publishes([
+            __DIR__.'/../$PATH_CONFIG$/admin.php' => config_path('source-$LOWER_NAME$-admin.php'),
+        ], 'config');
+        $this->mergeConfigFrom(
+            __DIR__.'/../$PATH_CONFIG$/admin.php', 'source-$LOWER_NAME$-admin'
+        );
+    }
+
+    /**
+     * Register views.
+     *
+     * @return void
+     */
+    public function registerViews()
+    {
+        $viewPath = resource_path('views/source/source-$LOWER_NAME$');
+
+        $sourcePath = __DIR__.'/../$PATH_VIEWS$';
+
+        $this->publishes([
+            $sourcePath => $viewPath
+        ],'views');
+
+        $this->loadViewsFrom(array_merge(array_map(function ($path) {
+            return $path . '/source/source-$LOWER_NAME$';
+        }, \Config::get('view.paths')), [$sourcePath]), 'source-$LOWER_NAME$');
+    }
+
+    /**
+     * Register translations.
+     *
+     * @return void
+     */
+    public function registerTranslations()
+    {
+        $langPath = resource_path('lang/source/source-$LOWER_NAME$');
+
+        if (is_dir($langPath)) {
+            $this->loadTranslationsFrom($langPath, 'source-$LOWER_NAME$');
+        } else {
+            $this->loadTranslationsFrom(__DIR__ .'/../$PATH_LANG$', 'source-$LOWER_NAME$');
+        }
+    }
+
+    /**
+     * Get the services provided by the provider.
+     *
+     * @return array
+     */
+    public function provides()
+    {
+        return [];
+    }
+
+    /**
+     * 设置 auth 配置.
+     *
+     * @return void
+     */
+    protected function loadAdminAuthConfig()
+    {
+        config(Arr::dot(config('source-$LOWER_NAME$-admin.auth', []), 'auth.'));
+    }
+
+    /**
+     * 路由中间件注册.
+     *
+     * @return void
+     * @throws BindingResolutionException
+     */
+    protected function registerRouteMiddleware()
+    {
+        $router = $this->app->make('router');
+
+        // register route middleware.
+        foreach ($this->routeMiddleware as $key => $middleware) {
+            $router->aliasMiddleware($key, $middleware);
+        }
+
+        $disablePermission = !config('source-$LOWER_NAME$-admin.permission.enable');
+
+        // register middleware group.
+        foreach ($this->middlewareGroups as $key => $middleware) {
+            if ($disablePermission && $middleware == 'source-$LOWER_NAME$-admin.permission') {
+                continue;
+            }
+            $router->middlewareGroup($key, $middleware);
+        }
+    }
+}

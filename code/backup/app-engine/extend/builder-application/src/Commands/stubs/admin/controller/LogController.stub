@@ -1,0 +1,108 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers\Admin;
+
+use Builder\Source\Admin\Grid;
+use Builder\Source\Admin\Layout\Content;
+use Builder\Source\Admin\Models\OperationLog as OperationLogModel;
+use Builder\Source\Admin\Models\Repositories\OperationLog;
+use Illuminate\Routing\Controller;
+use Illuminate\Support\Arr;
+
+class LogController extends Controller
+{
+    public function index(Content $content)
+    {
+        return $content
+            ->title(trans(config('builder-source-admin.translator') .'admin.operation_log'))
+            ->description(trans(config('builder-source-admin.translator') .'admin.list'))
+            ->body($this->grid());
+    }
+
+    protected function grid()
+    {
+        return new Grid(new OperationLog(), function (Grid $grid) {
+            $grid->column('id', 'ID')->sortable();
+            $grid->column('user', trans(config('builder-source-admin.translator') .'admin.user'))
+                ->get('name')
+                ->link(function () {
+                    if ($this->user) {
+                        return admin_url('auth/users/'.$this->user['id']);
+                    }
+                })
+                ->responsive();
+
+            $grid->column('method', trans(config('builder-source-admin.translator') .'admin.method'))
+                ->responsive()
+                ->label(OperationLogModel::$methodColors)
+                ->filterByValue();
+
+            $grid->column('path', trans(config('builder-source-admin.translator') .'admin.uri'))->responsive()->display(function ($v) {
+                return "<code>$v</code>";
+            })->filterByValue();
+
+            $grid->column('ip', 'IP')->filterByValue()->responsive();
+
+            $grid->column('input')->responsive()->display(function ($input) {
+                $input = json_decode($input, true);
+
+                if (empty($input)) {
+                    return;
+                }
+
+                $input = Arr::except($input, ['_pjax', '_token', '_method', '_previous_']);
+
+                if (empty($input)) {
+                    return;
+                }
+
+                return '<pre class="dump">'.json_encode($input, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE).'</pre>';
+            });
+
+            $grid->column('created_at', trans(config('builder-source-admin.translator') .'admin.created_at'))->responsive();
+
+            $grid->model()->with('user')->orderBy('id', 'DESC');
+
+            $grid->disableCreateButton();
+            $grid->disableQuickEditButton();
+            $grid->disableEditButton();
+            $grid->disableViewButton();
+            $grid->setActionClass(Grid\Displayers\Actions::class);
+
+            $grid->filter(function (Grid\Filter $filter) {
+                $userModel = config('source-$LOWER_NAME$-admin.database.users_model');
+
+                $filter->in('user_id', trans(config('builder-source-admin.translator') .'admin.user'))
+                    ->multipleSelect($userModel::pluck('name', 'id'));
+
+                $filter->equal('method', trans(config('builder-source-admin.translator') .'admin.method'))
+                    ->select(
+                        array_combine(OperationLogModel::$methods, OperationLogModel::$methods)
+                    );
+
+                $filter->like('path', trans(config('builder-source-admin.translator') .'admin.uri'));
+                $filter->equal('ip', 'IP');
+                $filter->between('created_at')->datetime();
+            });
+        });
+    }
+
+    public function destroy($id)
+    {
+        $ids = explode(',', $id);
+
+        if (OperationLogModel::destroy(array_filter($ids))) {
+            $data = [
+                'status'  => true,
+                'message' => trans(config('builder-source-admin.translator') .'admin.delete_succeeded'),
+            ];
+        } else {
+            $data = [
+                'status'  => false,
+                'message' => trans(config('builder-source-admin.translator') .'admin.delete_failed'),
+            ];
+        }
+
+        return response()->json($data);
+    }
+}

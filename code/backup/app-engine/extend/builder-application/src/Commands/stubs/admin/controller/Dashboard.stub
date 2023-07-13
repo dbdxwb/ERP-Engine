@@ -1,0 +1,11 @@
+<?php
+
+namespace $MODULE_NAMESPACE$\$STUDLY_NAME$\Http\Controllers\Admin;
+
+class Dashboard
+{
+    public static function title()
+    {
+        return view('builder-source-admin::dashboard.title');
+    }
+}
