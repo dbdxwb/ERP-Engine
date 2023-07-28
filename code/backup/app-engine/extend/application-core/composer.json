@@ -1,0 +1,105 @@
+{
+    "name": "dev-engine/core",
+    "description": "应用开发核心库",
+    "type": "composer-plugin",
+    "license": "MIT",
+    "autoload": {
+        "psr-4": {
+            "DevEngine\\Core\\": "src",
+            "DevEngine\\Database\\Core\\Seeders\\": "database/seeders"
+        },
+        "files": [
+            "src/Util/Function.php"
+        ]
+    },
+    "authors": [
+        {
+            "name": "lzq"
+        }
+    ],
+    "require": {
+        "php": ">=8.0",
+        "ext-bcmath": "*",
+        "ext-fileinfo": "*",
+        "ext-json": "*",
+        "ext-sockets": "*",
+        "composer-plugin-api": "^2.0",
+        "godruoyi/php-snowflake": "^2.0",
+        "guzzlehttp/guzzle": "^7.2",
+        "intervention/image": "^2.5",
+        "jenssegers/agent": "^2.6",
+        "jiannei/laravel-enum": "^3.0",
+        "jiannei/laravel-response": "^4.0",
+        "kalnoy/nestedset": "^6.0",
+        "laravel/framework": "^10.0",
+        "laravel/tinker": "^2.5",
+        "mews/captcha": "^3.2",
+        "nunomaduro/collision": "^7.0",
+        "orangehill/iseed": "^3.0",
+        "overtrue/laravel-filesystem-cos": "^3.1",
+        "overtrue/laravel-filesystem-qiniu": "^2.1",
+        "phpoffice/phpspreadsheet": "^1.15",
+        "spatie/laravel-ignition": "^2.0",
+        "tymon/jwt-auth": "^1.0|^2.0",
+        "composer/composer": "^2.5"
+    },
+    "scripts": {
+        "post-update-cmd": [
+            "DevEngine\\Core\\Composer\\Scripts::postUpdate",
+            "@php artisan vendor:publish --tag=\"dev-engine\" --force"
+        ],
+        "post-create-project-cmd": [
+            "@php artisan vendor:publish --tag=\"dev-engine\""
+        ]
+    },
+    "extra": {
+        "branch-alias": {
+        },
+        "laravel": {
+            "providers": [
+                "DevEngine\\Core\\Providers\\AppServiceProvider"
+            ],
+            "aliases": {
+                "Menu": "DevEngine\\Core\\Facades\\Menu"
+            }
+        },
+        "dev-engine": {
+            "service": [
+                "DevEngine\\Core\\Service\\Service"
+            ],
+            "route": [
+                "src/Routes/web.php",
+                "src/Routes/service.php",
+                "src/Routes/api.php",
+                "src/Routes/admin.php",
+                "src/Routes/auth-admin.php"
+            ],
+            "event": [
+                "DevEngine\\Core\\Events\\ServiceRegister",
+                "DevEngine\\Core\\Events\\ServiceBoot",
+                "DevEngine\\Core\\Events\\ManageTable",
+                "DevEngine\\Core\\Events\\ManageForm",
+                "DevEngine\\Core\\Events\\ManageExport",
+                "DevEngine\\Core\\Events\\ManageForm",
+                "DevEngine\\Core\\Events\\ManageDel",
+                "DevEngine\\Core\\Events\\ManageClear",
+                "DevEngine\\Core\\Events\\ManageRecovery",
+                "DevEngine\\Core\\Events\\ManageStatus",
+                "DevEngine\\Core\\Events\\MenuUrl"
+            ],
+            "listener": [
+                "DevEngine\\Core\\Listeners\\InstallSeed"
+            ],
+            "menu": [
+                "src/Menu/Admin.php"
+            ]
+        },
+        "class": "DevEngine\\Core\\Composer\\Plugin"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "preferred-install": "dist"
+    },
+    "minimum-stability": "dev"
+}

@@ -1,0 +1,8 @@
+<?php
+
+return [
+    'system' => {{system}},
+    'name' => '{{title}}',
+    'auth' => '{{auth}}',
+    'desc' => '{{desc}}',
+];

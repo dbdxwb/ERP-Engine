@@ -1,0 +1,37 @@
+{
+  "name": "dev-engine/installer",
+  "description": "dev-engine installer",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "Mr.L",
+      "email": "admin@duxphp.com"
+    }
+  ],
+  "require": {
+  },
+  "autoload": {
+    "psr-4": {
+      "DevEngineInstaller\\": "src/"
+    },
+    "files": [
+      "src/Helpers/functions.php"
+    ]
+  },
+  "extra": {
+    "laravel": {
+      "providers": [
+        "DevEngineInstaller\\Providers\\DevEngineInstallerServiceProvider"
+      ]
+    },
+    "dev-engine": {
+      "event": [
+        "DevEngineInstaller\\Events\\InstallSeed"
+      ]
+    }
+  },
+  "config": {
+    "sort-packages": true
+  },
+  "minimum-stability": "stable"
+}

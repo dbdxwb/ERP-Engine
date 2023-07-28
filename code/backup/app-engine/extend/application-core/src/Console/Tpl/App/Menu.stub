@@ -1,0 +1,18 @@
+<?php
+
+use \DevEngine\Core\Facades\Menu;
+
+Menu::add('{{name}}', [
+    'name' => '{{name}}',
+    'icon' => '{{icon}}',
+    'order' => 10,
+], function () {
+    Menu::group([
+        'name' => '{{menu}}',
+        'order' => 0,
+    ], function () {
+        // Generate Menu Make
+    });
+});
+
+

@@ -1,0 +1,27 @@
+<?php
+
+namespace Modules\{{app}}\Admin;
+
+use DevEngine\Core\UI\Form;
+use DevEngine\Core\UI\Table;
+
+class {{class}} extends \DevEngine\Core\Admin\Expend
+{
+
+    public string $model = {{modelClass}}::class;
+
+    protected function table(): Table
+    {
+        $table = new Table(new $this->model());
+        // Generate Table Make
+        return $table;
+    }
+
+    public function form(int $id = 0): Form
+    {
+        $form = new Form(new $this->model());
+        // Generate Form Make
+        return $form;
+    }
+
+}
