@@ -2,8 +2,8 @@
 
 namespace DevEngine\Core\Util;
 
-use Doctrine\DBAL\Exception;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Arr;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Str;
 
@@ -42,7 +42,7 @@ class Build
     public function getData($key)
     {
         $data = $this->getBuild();
-        return \Arr::get($data, $key, []);
+        return Arr::get($data, $key, []);
     }
 
     /**

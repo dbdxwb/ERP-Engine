@@ -16,13 +16,17 @@ class Menu
      */
     public function getAll(string $layout): array
     {
-        $layout = ucfirst($layout);
-        $serviceList = app(Build::class)->getData('menu.' . $layout);
-        $vendor = base_path();
-        foreach ($serviceList as $key => $vo) {
-            require_once $vendor . '/' . $vo;
-        }
+        // $layout = ucfirst($layout);
+        // $serviceList = app(Build::class)->getData('menu.' . $layout);
+        // $vendor = base_path();
+        // foreach ($serviceList as $key => $vo) {
+        //     require_once $vendor . '/' . $vo;
+        // }
         return \DevEngine\Core\Facades\Menu::getData();
+    }
+
+    public function getNavbar(){
+        return \DevEngine\Core\Facades\Menu::getNavbar();
     }
 
     /**
@@ -37,7 +41,6 @@ class Menu
         $data = $this->getAll($layout);
 
         $data = collect($data)->sortBy('order');
-
         $user = auth(strtolower($layout))->user();
         if ($user->roles) {
             $roleList = auth(strtolower($layout))->user()->roles()->get();
@@ -75,6 +78,7 @@ class Menu
             $appData = [
                 'app' => $app,
                 'name' => $appList['name'],
+                'navbar' => $appList['navbar'],
                 'title' => $appList['title'],
                 'icon' => $appList['icon'],
                 'url' => $url,
@@ -114,6 +118,7 @@ class Menu
                         'title' => $subList['title'],
                         'url' => $url,
                         'target' => $subList['target'],
+                        'navbar' => $appData['navbar'],
                     ];
 
                     if (!$appData['url']) {

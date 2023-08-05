@@ -16,13 +16,23 @@ class Index extends Common
 
     public function menu()
     {
-        $list = app(\DevEngine\Core\Util\Menu::class)->getManage('admin');
-        $static = app(\DevEngine\Core\Util\Menu::class)->getStatic('admin');
+        $navbar = app(\DevEngine\Core\Util\Menu::class)->getNavbar();
+        $list = app(\DevEngine\Core\Util\Menu::class)->getManage('core');
+        $static = app(\DevEngine\Core\Util\Menu::class)->getStatic('core');
         $list = array_values($list);
         $apps = app(\DevEngine\Core\Util\Menu::class)->getApps();
+
+        foreach ($list as $value) {
+            foreach ($navbar as $key => $item) {
+                if ($key == $value['navbar']) {
+                    $navbar[$key] = array_merge($item, $value);
+                }
+            }
+        }
         return app_success('ok', [
-            'list' => $list,
-            'apps' => $apps,
+            'navbar' => $navbar,
+            'list'   => $list,
+            'apps'   => $apps,
             'static' => $static
         ]);
     }

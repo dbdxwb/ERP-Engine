@@ -20,7 +20,7 @@ class AdminServiceProvider extends ServiceProvider
     public function register()
     {
 
-        app('config')->set('auth.guards.admin', [
+        app('config')->set('auth.guards.core', [
             'driver'   => 'jwt',
             'provider' => 'admins',
         ]);

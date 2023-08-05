@@ -19,7 +19,7 @@ import './src/utils/global'
 // 路由
 import NodeCreate from './src/components/route/Create.js'
 import Route from './src/components/route/Route.vue'
-import DataLayout from './src/components/route/Layout'
+import DataLayout from './src/components/route/Layout.vue'
 import DataDialog from './src/components/route/Dialog'
 // 公用
 import RichText from './src/components/common/RichText.vue'

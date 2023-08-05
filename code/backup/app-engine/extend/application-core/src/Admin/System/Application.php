@@ -49,7 +49,7 @@ class Application extends Common
 
         $formList = \DevEngine\Core\Model\Form::where('manage', 0)->get();
         $this->assign('formList', $formList);
-        return view('application-admin-system::Admin.Application.index', $this->getAssign());
+        return view('application-core::Admin.Application.index', $this->getAssign());
     }
 
 }

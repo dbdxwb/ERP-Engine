@@ -103,8 +103,8 @@ class Development extends Common
         foreach ($this->data as $key => $vo) {
             $this->assign($key, $vo);
         }
-        return view('application-admin-system::Admin.Development.index',$this->getAssign());
-        // return $this->systemView('vendor/duxphp/dev-engine-admin/src/System/View/Admin/Development/index');
+        return view('application-core::admin.development.index',$this->getAssign());
+        // return $this->systemView('vendor/dev-engine/dev-engine-admin/src/System/View/Admin/Development/index');
     }
 
     private function data($label, $data)

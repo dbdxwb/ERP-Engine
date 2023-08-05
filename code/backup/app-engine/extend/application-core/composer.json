@@ -91,7 +91,7 @@
                 "DevEngine\\Core\\Listeners\\InstallSeed"
             ],
             "menu": [
-                "src/Menu/Admin.php"
+                "src/Menu/Core.php"
             ]
         },
         "class": "DevEngine\\Core\\Composer\\Plugin"

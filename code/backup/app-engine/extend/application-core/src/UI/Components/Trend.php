@@ -26,6 +26,6 @@ class Trend extends Component
      */
     public function render()
     {
-        return view('vendor.duxphp.dev-engine-app.src.core.UI.View.Components.trend');
+        return view('vendor.dev-engine.dev-engine-app.src.core.UI.View.Components.trend');
     }
 }

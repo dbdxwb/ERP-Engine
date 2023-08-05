@@ -31,9 +31,11 @@ class AppServiceProvider extends ServiceProvider
         // 注册组件
         $this->app->singleton(Build::class);
 
+        //注册路由
         $this->app->singleton('Menu', function () {
             return new MenuStore();
         });
+        $this->registerMenu();
 
         $this->app->singleton('Permission', function () {
             return new Permission();
@@ -54,6 +56,8 @@ class AppServiceProvider extends ServiceProvider
         $this->app->register(CoreServiceProvider::class);
         $this->app->register(UIServiceProvider::class);
         $this->app->register(AdminServiceProvider::class);
+        $this->app->register(MiddlewareServiceProvider::class);
+        $this->app->register(ConsoleServiceProvider::class);
 
         foreach ($providers as $vo) {
             $this->app->register($vo);
@@ -104,6 +108,7 @@ class AppServiceProvider extends ServiceProvider
         };
 
         $this->registerViews();
+
     }
 
     /**
@@ -124,5 +129,10 @@ class AppServiceProvider extends ServiceProvider
         $this->loadViewsFrom(array_merge(array_map(function ($path) {
             return $path . '/application/core';
         }, Config::get('view.paths')), [$sourcePath]), 'application-core');
+    }
+
+    public function registerMenu()
+    {
+        require_once base_path() . '/vendor/dev-engine/core/src/Menu/Core.php';
     }
 }

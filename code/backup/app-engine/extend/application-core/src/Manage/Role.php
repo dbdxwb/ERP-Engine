@@ -14,7 +14,6 @@ trait Role
     private function parserData()
     {
         $parsing = app_parsing();
-
         $this->config['layer'] = $parsing['layer'];
         $this->config['guard_id'] = request()->get('global_guard_id', null);
 

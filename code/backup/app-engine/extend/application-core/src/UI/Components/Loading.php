@@ -24,6 +24,6 @@ class Loading extends Component
      */
     public function render()
     {
-        return view('vendor.duxphp.dev-engine-app.src.core.UI.View.Components.loading');
+        return view('vendor.dev-engine.dev-engine-app.src.core.UI.View.Components.loading');
     }
 }

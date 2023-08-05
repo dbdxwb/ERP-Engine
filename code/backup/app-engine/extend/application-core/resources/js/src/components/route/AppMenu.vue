@@ -28,7 +28,7 @@
               class="
                 text-gray-800
                 dark:text-gray-400
-                hover:text-blue-600
+                hover:text-green-600
                 dark:hover:text-gray-300
                 block
                 p-2.5
@@ -39,7 +39,7 @@
               v-for="(child2, index2) in child.menu"
               :key="child2.name"
               :class="{
-                'bg-blue-50 text-blue-600 dark:bg-blackgray-1 dark:text-gray-400':
+                'bg-green-50 text-green-600 dark:bg-blackgray-1 dark:text-gray-400':
                   select[1] === index1 && select[2] === index2,
               }"
               @click="target(child2)"
@@ -73,10 +73,12 @@ export default {
       menuData: {},
     };
   },
+
   watch: {
     menu(data, old) {
       if (data.name === old?.name) {
         return;
+
       }
       const page = document.querySelector(".menu-child-root");
       if (page) {
@@ -90,6 +92,7 @@ export default {
           }, 50);
         } else if (lastMenu !== "empty" && currentMenu !== "menu") {
           // 隐藏菜单
+
           page.classList.add("hide");
           setTimeout(() => {
             this.menuData = data;

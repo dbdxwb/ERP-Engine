@@ -71,7 +71,7 @@ class VisitorApi extends Expend
             return app_error('暂未找到数据');
         }
         $this->assign('apiList', $apiList);
-        return $this->dialogView('vendor/duxphp/dev-engine-admin/src/System/View/Admin/VisitorApi/loadTotal');
+        return $this->dialogView('vendor/dev-engine/dev-engine-admin/src/System/View/Admin/VisitorApi/loadTotal');
     }
 
     public function loadDelay()
@@ -95,7 +95,7 @@ class VisitorApi extends Expend
             return app_error('暂未找到数据');
         }
         $this->assign('apiList', $apiList);
-        return $this->dialogView('vendor/duxphp/dev-engine-admin/src/System/View/Admin/VisitorApi/loadDelay');
+        return $this->dialogView('vendor/dev-engine/dev-engine-admin/src/System/View/Admin/VisitorApi/loadDelay');
     }
 
 }

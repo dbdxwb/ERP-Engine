@@ -1,8 +1,8 @@
 {
   "name": "dev-engine-install",
   "version": "1.0.0",
-  "repository": "https://github.com/duxphp/dev-engine-install.git",
-  "author": "Mr.L <admin@duxphp.com>",
+  "repository": "https://github.com/dev-engine/dev-engine-install.git",
+  "author": "Mr.L <admin@dev-engine.com>",
   "license": "MIT",
   "devDependencies": {
     "autoprefixer": "^10.4.0",

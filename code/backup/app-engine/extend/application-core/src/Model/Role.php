@@ -22,7 +22,7 @@ class Role extends \DevEngine\Core\Model\Base
 
     public static function create(array $attributes = [])
     {
-        $attributes['guard'] = $attributes['guard'] ?? 'admin';
+        $attributes['guard'] = $attributes['guard'] ?? 'core';
         return static::query()->create($attributes);
     }
 }

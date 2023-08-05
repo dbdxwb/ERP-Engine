@@ -109,7 +109,7 @@ class RouteServiceProvider extends ServiceProvider
      */
     protected function mapAuthAdminRoutes()
     {
-        Route::middleware(['api', 'auth.api'])
+        Route::middleware(['web', 'auth.manage'])
             ->namespace("DevEngine\Core\Admin")
             ->group(__DIR__ . '/../Routes/auth-admin.php');
     }

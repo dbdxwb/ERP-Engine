@@ -26,18 +26,21 @@ trait Login
     {
         $layer = strtolower(app_parsing('layer'));
         $credentials = $request->only('username', 'password');
-        if ($token = auth($layer)->attempt([$this->usernameKey ?: 'username' => $credentials['username'], 'password' => $credentials['password']])) {
+        if ($token = auth($layer)->attempt([
+            $this->usernameKey ?: 'username' => $credentials['username'],
+            'password'                       => $credentials['password']
+        ])) {
             $user = auth($layer)->user();
             $username = $this->usernameKey ? $user->{$this->usernameKey} : $user->username;
             return app_success('登录成功', [
                 'userInfo' => [
-                    'user_id' => $user->user_id,
-                    'avatar' => $user->avatar,
+                    'user_id'     => $user->user_id,
+                    'avatar'      => $user->avatar,
                     'avatar_text' => mb_substr($user->nickname ?: $username, 0, 1),
-                    'rolename' => $user->roles[0]['name'],
-                    'subname' => $user->nickname,
+                    'rolename'    => $user->roles[0]['name'],
+                    'subname'     => $user->nickname,
                 ],
-                'token' => 'Bearer ' . $token,
+                'token'    => 'Bearer ' . $token,
             ]);
         }
         app_error('账号密码错误');

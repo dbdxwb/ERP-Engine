@@ -15,6 +15,7 @@ use DevEngine\Core\UI\Table\Batch;
 use DevEngine\Core\UI\Table\Column;
 use DevEngine\Core\UI\Table\Filter;
 use DevEngine\Core\UI\Table\FilterType;
+use Illuminate\Support\Facades\Schema;
 
 /**
  * 表格UI
@@ -76,7 +77,7 @@ class Table
         if ($data instanceof Eloquent) {
             $this->model = $data;
             $this->query = new ModelAgent($data);
-            $this->fields = \Schema::getColumnListing($data->getTable());
+            $this->fields = Schema::getColumnListing($data->getTable());
         } else {
             $this->data = $data;
         }

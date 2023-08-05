@@ -1,0 +1,50 @@
+{
+  "name": "dev-engine/application-member",
+  "description": "DevEngine Member Application",
+  "type": "application",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "DuxPHP",
+      "email": "admin@dev-engine.com"
+    }
+  ],
+  "minimum-stability": "stable",
+  "prefer-stable": true,
+  "require": {
+    "dev-engine/core": "*"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Modules\\": "src"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+    },
+    "laravel": {
+      "providers": [
+        "Modules\\Member\\Providers\\MemberServiceProvider"
+      ]
+    },
+    "duxravel": {
+      "service": [
+      ],
+      "route": [
+        "src/Member/Route/Api.php",
+        "src/Member/Route/AuthAdmin.php",
+        "src/Member/Route/Member.php"
+      ],
+      "menu": [
+        "src/Member/Menu/Core.php"
+      ]
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "preferred-install": "dist"
+  }
+}

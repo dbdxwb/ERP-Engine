@@ -21,6 +21,9 @@ class Kernel extends HttpKernel
         \Illuminate\Foundation\Http\Middleware\ValidatePostSize::class,
         \App\Http\Middleware\TrimStrings::class,
         \Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull::class,
+        \DevEngine\Core\Middleware\CheckInstall::class,
+        \DevEngine\Core\Middleware\VisitorBefore::class,
+        \DevEngine\Core\Middleware\VisitorAfter::class
     ];
 
     /**

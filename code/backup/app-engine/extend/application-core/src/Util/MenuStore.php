@@ -16,12 +16,29 @@ class MenuStore
     private ?string $lastIndex = null;
     private int $lastKey = 0;
 
+    private array $navbar = [];
+
+
+    /**
+     * 添加顶部导航
+     * @param string $index
+     * @param array $params
+     * @param null $rule
+     */
+    public function navbar(string $index, array $params, $rule = null): void
+    {
+        $this->navbar[$index] = $params;
+
+        if ($rule instanceof \Closure) {
+            $rule($this);
+        }
+    }
 
     /**
      * 添加主菜单
      * @param string $index
-     * @param array  $params
-     * @param null   $rule
+     * @param array $params
+     * @param null $rule
      */
     public function add(string $index, array $params, $rule = null): void
     {
@@ -39,9 +56,9 @@ class MenuStore
 
     /**
      * 添加菜单组
-     * @param array         $params
+     * @param array $params
      * @param callable|null $callback
-     * @param null          $index
+     * @param null $index
      */
     public function group(array $params, ?callable $callback = null, $index = null): void
     {
@@ -64,16 +81,16 @@ class MenuStore
      * 添加菜单链接
      * @param string $name
      * @param string $route
-     * @param array  $params
-     * @param int    $index
+     * @param array $params
+     * @param int $index
      */
     public function link(string $name, string $route, array $params = [], int $index = 0): void
     {
         $data = [
-            'name' => $name,
-            'route' => $route,
+            'name'   => $name,
+            'route'  => $route,
             'params' => $params,
-            'order' => $index,
+            'order'  => $index,
         ];
         $this->data[$this->lastIndex]['menu'][$this->lastKey]['menu'][] = $data;
     }
@@ -89,13 +106,13 @@ class MenuStore
 
     /**
      * 追加菜单
-     * @param string   $index
+     * @param string $index
      * @param callable $callback
      */
     public function push(string $index, callable $callback): void
     {
         $this->pushData[] = [
-            'index' => $index,
+            'index'    => $index,
             'callback' => $callback
         ];
     }
@@ -124,4 +141,12 @@ class MenuStore
         return $this->appData;
     }
 
+    /**
+     * 获取顶部导航
+     * @return array
+     */
+    public function getNavbar(): array
+    {
+        return $this->navbar;
+    }
 }

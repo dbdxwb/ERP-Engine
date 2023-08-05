@@ -1,0 +1,25 @@
+version: "3.7"
+
+services:
+
+  # bot
+  douyin_tiktok_download_api:
+    image: ./Dockerfile
+    container_name: douyin_tiktok_download_api
+    restart: always
+    volumes:
+      - ./config.ini:/app/config.ini
+    ports:
+      - '12880:8000'
+      - '12080:80'
+    environment:
+      TZ: Asia/Shanghai
+    deploy:
+      resources:
+        limits:
+          cpus: '0.80'
+    networks:
+      - "sail"
+networks:
+  sail:
+    driver: bridge

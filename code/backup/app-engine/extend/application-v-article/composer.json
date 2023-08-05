@@ -1,0 +1,55 @@
+{
+    "name": "dev-engine/application-article",
+    "description": "DevEngine Article Application",
+    "type": "application",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "DuxPHP",
+            "email": "admin@dev-engine.com"
+        }
+    ],
+    "minimum-stability": "dev",
+    "prefer-stable": true,
+    "require": {
+        "dev-engine/core": "*"
+    },
+    "require-dev": {
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\": "src",
+            "Modules\\Article\\Seeders\\": "database/seeders"
+        }
+    },
+    "extra": {
+        "branch-alias": {
+        },
+        "laravel": {
+            "providers": [
+                "Modules\\Article\\Providers\\ArticleServiceProvider"
+            ]
+        },
+        "duxravel": {
+            "service": [
+            ],
+            "route": [
+                "src/Article/Route/Api.php",
+                "src/Article/Route/AuthAdmin.php",
+                "src/Article/Route/Web.php"
+            ],
+            "menu": [
+                "src/Article/Menu/Admin.php"
+            ],
+            "listener": [
+                "Modules\\Article\\Listeners\\InstallSeed",
+                "Modules\\Article\\Listeners\\MenuUrl"
+            ]
+        }
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "sort-packages": true,
+        "preferred-install": "dist"
+    }
+}

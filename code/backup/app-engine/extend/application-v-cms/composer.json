@@ -1,0 +1,53 @@
+{
+  "name": "dev-engine/application-cms",
+  "description": "DevEngine CMS Application",
+  "type": "application",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "DuxPHP",
+      "email": "admin@dev-engine.com"
+    }
+  ],
+  "minimum-stability": "dev",
+  "prefer-stable": true,
+  "require": {
+    "dev-engine/core": "*"
+  },
+  "require-dev": {
+  },
+  "autoload": {
+    "psr-4": {
+      "Modules\\": "src",
+      "Modules\\Cms\\Seeders\\": "database/seeders"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+    },
+    "laravel": {
+      "providers": [
+        "Modules\\Cms\\Providers\\CmsServiceProvider"
+      ]
+    },
+    "duxravel": {
+      "route": [
+        "src/Cms/Route/AuthAdmin.php",
+        "src/Cms/Route/Web.php",
+        "src/Cms/Route/Api.php"
+      ],
+      "menu": [
+        "src/Cms/Menu/Admin.php"
+      ],
+      "listener": [
+        "Modules\\Cms\\Listeners\\InstallSeed",
+        "Modules\\Cms\\Listeners\\ManageForm"
+      ]
+    }
+  },
+  "config": {
+    "optimize-autoloader": true,
+    "sort-packages": true,
+    "preferred-install": "dist"
+  }
+}

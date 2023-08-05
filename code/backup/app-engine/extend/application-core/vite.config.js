@@ -16,7 +16,11 @@ module.exports = ({mode}) => {
             vueJsx(),
             laravel({
                 input: ['resources/css/app.css', 'resources/js/app.js'],
-                refresh: true,
+                refresh: [
+                    'resources/js/**',
+                    'src/Routes/**',
+                    'resources/views/**',
+                ],
             }),
         ],
         resolve: {
@@ -27,14 +31,25 @@ module.exports = ({mode}) => {
             }
         },
         build: {
-            outDir: '../../public/static/build',
-            assetsDir: '/application-core/manage',
+            outDir: '../../public/build',
+            assetsDir: './application-core/manage',
             manifest: true,
             emptyOutDir: true,
+            rollupOptions: {
+                output: {
+                    // 在这里修改静态资源路径
+                    chunkFileNames: 'static/assets/js/[name]-[hash].js',
+                    entryFileNames: 'static/assets/js/[name]-[hash].js',
+                    assetFileNames: 'static/assets/[ext]/[name]-[hash].[ext]',
+                }
+            }
         },
         server: {
             host: '0.0.0.0',
-            port: 3000
+            port: 5173,
+            watch: {
+                usePolling: true,
+            },
         }
     });
 };

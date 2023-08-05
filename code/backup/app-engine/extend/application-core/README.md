@@ -1,24 +1,24 @@
 <p align="center">
 <a href="https://www.dev-engine.com/">
-    <img src="https://github.com/duxphp/dev-engine/blob/main/resources/image/watermark.png?raw=true" width="100" height="100">
+    <img src="https://github.com/dev-engine/dev-engine/blob/main/resources/image/watermark.png?raw=true" width="100" height="100">
 </a>
 
 <p align="center">适用于 dev-engine 配套后台前端代码</p>
 
 <p align="center">
 <a href="https://www.dev-engine.com">中文文档</a> |
-<a href="https://www.github.com/duxphp/dev-engine">配套后端</a>
+<a href="https://www.github.com/dev-engine/dev-engine">配套后端</a>
 </p>
 
 <p align="center">
-    <a href="https://packagist.org/packages/duxphp/dev-engine-static">
-        <img src="https://img.shields.io/github/v/release/duxphp/dev-engine-static">
+    <a href="https://packagist.org/packages/dev-engine/dev-engine-static">
+        <img src="https://img.shields.io/github/v/release/dev-engine/dev-engine-static">
     </a>
-    <a href="https://packagist.org/packages/duxphp/dev-engine-static">
-        <img src="https://imgxq.shields.io/packagist/dt/duxphp/dev-engine-static.svg?style=flat-square">
+    <a href="https://packagist.org/packages/dev-engine/dev-engine-static">
+        <img src="https://imgxq.shields.io/packagist/dt/dev-engine/dev-engine-static.svg?style=flat-square">
     </a>
-    <a href="https://packagist.org/packages/duxphp/dev-engine">
-        <img src="https://img.shields.io/packagist/l/duxphp/dev-engine.svg?maxAge=2592000&&style=flat-square" alt="Packagist">
+    <a href="https://packagist.org/packages/dev-engine/dev-engine">
+        <img src="https://img.shields.io/packagist/l/dev-engine/dev-engine.svg?maxAge=2592000&&style=flat-square" alt="Packagist">
     </a>
     <a href="https://github.com/arco-design/arco-design-vue">
         <img src="https://img.shields.io/badge/dependence-arco design-red?style=flat-square">
@@ -52,14 +52,14 @@ yarn build
 yarn lint
 ```
 
-### 实时编译（Duxravel）
+### 实时编译（DevEngine）
 本地开发时，如需 `dev-engine-static` 与 `dev-engine` 主项目（即您的业务项目）实时编译并生效，可按如下几步简便实现：
 
 1. 在您的业务项目 `composer.json` 添加如下配置
 
 ```json
     "repositories": {
-        "duxphp/dev-engine-static": {
+        "dev-engine/dev-engine-static": {
             "type": "path",
             "url": "/path/to/your/local/dev-engine-static",
             "options": {
@@ -69,7 +69,7 @@ yarn lint
     },
 ```
 
-2. 在您的业务项目根目录下，执行 `composer update -vv` 或者 `composer require duxphp/dev-engine-static -vv`
+2. 在您的业务项目根目录下，执行 `composer update -vv` 或者 `composer require dev-engine/dev-engine-static -vv`
 
 3. 在 `dev-engine-static` 创建 `.env.local` 文件并添加环境变量：
 
@@ -85,7 +85,7 @@ DUXRAVEL_PROJECT_ROOT = '/path/to/your/dev-engine'
 ```shell
 INFO  Publishing [dev-engine] assets.  
 
-Copying directory [/path/to/github.com/duxphp/dev-engine-static/dist/static/manage] to [public/static/manage] ........................ DONE
-Copying directory [/path/to/github.com/duxphp/dev-engine-static/dist/static/tinymce] to [public/static/tinymce] ...................... DONE
-Copying file [/path/to/github.com/duxphp/dev-engine-static/dist/manifest.json] to [public/static/manage-manifest.json] ............... DONE
+Copying directory [/path/to/github.com/dev-engine/dev-engine-static/dist/static/manage] to [public/static/manage] ........................ DONE
+Copying directory [/path/to/github.com/dev-engine/dev-engine-static/dist/static/tinymce] to [public/static/tinymce] ...................... DONE
+Copying file [/path/to/github.com/dev-engine/dev-engine-static/dist/manifest.json] to [public/static/manage-manifest.json] ............... DONE
 ```

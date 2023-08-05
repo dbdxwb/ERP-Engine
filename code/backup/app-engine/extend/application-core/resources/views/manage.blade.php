@@ -5,16 +5,18 @@
     <link rel="icon" href="/favicon.ico"/>
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=0">
     <title>{{config('app.name')}}</title>
-    @vite(['resources/js/app.js'],'static/build')
-    @vite(['resources/css/app.css'],'static/build')
+
+
+    @vite(['resources/js/app.js'],'build')
+    @vite(['resources/css/app.css'],'build')
     {{--    <script type="module" src="/{{ $mainJs }}"></script>--}}
     {{--  <link rel="stylesheet" href="/{{ $mainCss }}" />--}}
     <script>
         window.appConfig = {
             name: '{{$info['name'] ?: config('app.name')}}',
-            logo: '/images/logo.svg',
+            // logo: '/images/logo.svg',
             login: {
-                logo: '/images/logo.svg',
+                // logo: '/images/logo.svg',
                 title: '{{$info['login']['title'] ?:config('app.name')}}',
                 name: '{{$info['login']['name'] ?: '系统登录'}}',
                 desc: '{{$info['login']['desc'] ?:config('app.desc')}}',
