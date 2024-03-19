@@ -4,7 +4,8 @@ services:
 
   # bot
   douyin_tiktok_download_api:
-    image: ./Dockerfile
+    image: tiktok-download-douyin_tiktok_download_api:latest
+    command: tail -f /dev/null
     container_name: douyin_tiktok_download_api
     restart: always
     volumes:
